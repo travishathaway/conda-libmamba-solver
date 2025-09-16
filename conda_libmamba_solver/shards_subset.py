@@ -94,18 +94,12 @@ class RepodataSubset:
 
 
 def build_repodata_subset(tmp_path, root_packages, channels):
-    channel_data: dict[str, ShardLike] = {}
-    for channel in channels:
-        for channel_url in Channel(channel).urls(True, context.subdirs):
-            subdir_data = SubdirData(Channel(channel_url))
-            found = fetch_shards(subdir_data)
-            if not found:
-                repodata_json, _ = subdir_data.repo_fetch.fetch_latest_parsed()
-                found = ShardLike(repodata_json, channel_url)  # type: ignore
-            channel_data[channel_url] = found
+    """
+    Builds and writes sharded repodata subset to disk as a `repodata.json` file.
+    """
+    channel_data = get_channel_shards(root_packages, channels)
+    subset= get_repodata_subset(root_packages, channel_data)
 
-    subset = RepodataSubset((*channel_data.values(),))
-    subset.shortest(root_packages)
     print(len(subset.nodes), "package names discovered")
 
     subset_paths = {}
@@ -124,3 +118,31 @@ def build_repodata_subset(tmp_path, root_packages, channels):
         subset_paths[channel] = repodata_path
 
     return subset_paths, repodata_size
+
+
+def get_channel_shards(root_packages, channels) -> dict[str, ShardLike]:
+    """
+    Returns `ShardLike` objects in a dictionary keyed by channel URL
+    """
+    channel_data: dict[str, ShardLike] = {}
+
+    for channel in channels:
+        for channel_url in Channel(channel).urls(True, context.subdirs):
+            subdir_data = SubdirData(Channel(channel_url))
+            found = fetch_shards(subdir_data)
+            if not found:
+                repodata_json, _ = subdir_data.repo_fetch.fetch_latest_parsed()
+                found = ShardLike(repodata_json, channel_url)  # type: ignore
+            channel_data[channel_url] = found
+
+    return channel_data
+
+
+def get_repodata_subset(root_packages, channel_data: dict[str, ShardLike]) -> RepodataSubset:
+    """
+    Returns a `RepodataSubset` object
+    """
+    subset = RepodataSubset((*channel_data.values(),))
+    subset.shortest(root_packages)
+
+    return subset
