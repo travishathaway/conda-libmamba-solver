@@ -1,0 +1,12 @@
+{
+  "commands": [
+    {
+      "name": "conda_create_python_conda_forge",
+      "command": "python -m conda create --name profile-env --channel conda-forge --override-channels --yes --quiet python"
+    },
+    {
+      "name": "conda_create_python_main",
+      "command": "python -m conda create --name profile-env --channel main --override-channels --yes --quiet python"
+    }
+  ]
+}

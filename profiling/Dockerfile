@@ -1,6 +1,8 @@
 FROM continuumio/miniconda3:latest
 
-RUN conda install --yes psutil
-COPY profile.py /root/
+WORKDIR /app
+COPY to_profile.json .
 
-CMD ["python", "/root/profile.py"]
+RUN pip install git+https://github.com/travishathaway/perfpy.git
+
+CMD ["perfpy", "to_profile.json", "--output", "report.csv"]

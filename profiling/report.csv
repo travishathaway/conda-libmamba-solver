@@ -1,0 +1,3 @@
+name,command,bytes_recv,bytes_sent,user_time,cpu_time,total_time,max_memory_usage
+conda_create_python_conda_forge,python -m conda create --name profile-env --channel conda-forge --override-channels --yes --quiet python,90524075,972292,9.543481,2.78064,22882984302,782.17
+conda_create_python_main,python -m conda create --name profile-env --channel main --override-channels --yes --quiet python,77311478,1220597,21.236529,4.78448,21807833218,782.17
